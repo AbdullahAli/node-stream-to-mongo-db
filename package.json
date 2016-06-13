@@ -1,0 +1,45 @@
+{
+  "name": "stream-to-mongo-db",
+  "version": "1.0.0",
+  "description": "Stream data to MongoDB using node's `pipe()` command",
+  "main": "src/index.js",
+  "scripts": {
+    "compile": "babel -d out/ src/",
+    "prepublish": "npm run compile",
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AbdullahAli/stream-to-mongo-db.git"
+  },
+  "keywords": [
+    "stream",
+    "mongo",
+    "mongodb",
+    "pipe",
+    "stream to mongodb",
+    "stream to mongo db",
+    "stream to mongo",
+    "mongo stream",
+    "write to mongo",
+    "mongo write stream"
+  ],
+  "author": "Abdullah Ali",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AbdullahAli/stream-to-mongo-db/issues"
+  },
+  "homepage": "https://github.com/AbdullahAli/stream-to-mongo-db",
+  "devDependencies": {
+    "babel-core": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.4.0",
+    "mongodb": "^2.1.18",
+    "promise-mongo": "^3.0.3",
+    "promised-mongo": "^1.2.0",
+    "stream-tk": "^0.3.4",
+    "wait.for": "^0.6.6"
+  }
+}
