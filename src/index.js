@@ -1,8 +1,9 @@
 import { Writable    } from 'stream';
 import Bluebird        from 'bluebird';
+import MongoDB         from "mongodb";
 
-var MongoClient = require("mongodb");
-Bluebird.promisifyAll(MongoClient);
+Bluebird.promisifyAll(MongoDB.MongoClient);
+Bluebird.promisifyAll(MongoDB.Collection.prototype);
 
 let config = {};
 let conn   = {};
@@ -24,7 +25,7 @@ function streamToMongoDB(options) {
 
 function connect() {
     return new Bluebird((resolve, reject) => {
-        MongoClient.connectAsync(config.dbURL)
+        MongoDB.MongoClient.connectAsync(config.dbURL)
             .then(db => {
                 conn.db = db;
                 conn.collection = conn.db.collection(config.collection);
