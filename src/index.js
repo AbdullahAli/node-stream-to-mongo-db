@@ -15,6 +15,7 @@ function streamToMongoDB(options) {
 }
 
 function connect() {
+    console.log("connecting..")
     return new Bluebird((resolve, reject) => {
         MongoDB.MongoClient.connectAsync(config.dbURL)
             .then(db => {
@@ -55,8 +56,11 @@ function writableStream() {
         objectMode: true,
         write: function(record, encoding, next) {
             if(conn.db) {
+                console.log("with connection...")
                 prepareInsert(record).then(next);
             } else {
+                console.log("no connn connection...")
+
                 connect().then(() => {
                     prepareInsert(record).then(next);
                 });
@@ -66,6 +70,7 @@ function writableStream() {
 
     writableStream.on("finish", () => {
         // insert remainder of the batch that did not fit into the batchSize
+        console.log("finished!");
         insertToMongo(batch).then(() => {
             // garbage collect the used up batch
             resetBatch();
