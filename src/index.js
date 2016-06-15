@@ -11,7 +11,14 @@ let batch  = [];
 
 function streamToMongoDB(options) {
     setupConfig(options);
-    return writableStream();
+
+    let x = function(options) {
+        console.log("options!!!>>>", options);
+
+        return writableStream();
+    };
+
+    return x;
 }
 
 function connect() {
@@ -21,6 +28,8 @@ function connect() {
             .then(db => {
                 conn.db = db;
                 conn.collection = conn.db.collection(config.collection);
+
+                console.log("coneceted!")
                 resolve();
             })
             .catch(error => reject(error));
@@ -29,15 +38,20 @@ function connect() {
 
 function insertToMongo(records) {
     return new Bluebird((resolve, reject) => {
-        conn.collection.insertAsync(records, config.insertOptions)
-            .then(resolve)
-            .catch(error => reject(error));
+        if(batch.length) {
+            console.log("inseting to mongo!!", records)
+            conn.collection.insertAsync(records, config.insertOptions)
+                .then(resolve)
+                .catch(error => reject(error));
+        } else {
+            resolve();
+        }
     });
 }
 
 function prepareInsert(record) {
     return new Bluebird(resolve => {
-        batch.push(record.person);
+        batch.push(record);
 
         if(batch.length === config.batchSize) {
             insertToMongo(batch)
