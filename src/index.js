@@ -32,7 +32,7 @@ function connect() {
 function insertToMongo(records) {
     return new Bluebird((resolve, reject) => {
         if(batch.length) {
-            console.log("inseting to mongo!!", records)
+            // console.log("inseting to mongo!!", records)
             conn.collection.insertAsync(records, config.insertOptions)
                 .then(resolve)
                 .catch(error => reject(error));
@@ -63,10 +63,10 @@ function writableStream() {
         objectMode: true,
         write: function(record, encoding, next) {
             if(conn.db) {
-                console.log("with connection...")
+                // console.log("with connection...")
                 prepareInsert(record).then(next);
             } else {
-                console.log("no connn connection...")
+                // console.log("no connn connection...")
 
                 connect().then(() => {
                     prepareInsert(record).then(next);
@@ -81,8 +81,9 @@ function writableStream() {
         insertToMongo(batch).then(() => {
             // garbage collect the used up batch
             resetBatch();
-            // resetConn();
             conn.db.close();
+            // resetConn();
+
         });
     });
 
@@ -93,11 +94,17 @@ function setupConfig(options){
     config = options;
     const defaultConfiguration = defaultConfig();
 
+    console.log(options)
+
     Object.keys(defaultConfiguration).map(configKey => {
         if(!config[configKey]) {
             config[configKey] = defaultConfiguration[configKey];
         }
     });
+
+    // if(config.batchSize <= 0) {
+    //     throw "'batchSize' must be a positive value";
+    // }
 }
 
 function defaultConfig() {
