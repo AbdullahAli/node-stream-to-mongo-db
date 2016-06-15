@@ -1,9 +1,6 @@
 import streamToMongoDB from "./index";
 import { MongoClient } from "mongodb";
 
-
-
-
 let config = {
     dbURL: 'mongodb://localhost:27017/match',
     collection: 'hmm',

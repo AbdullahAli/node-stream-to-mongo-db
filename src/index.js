@@ -11,14 +11,7 @@ let batch  = [];
 
 function streamToMongoDB(options) {
     setupConfig(options);
-
-    let x = function(options) {
-        console.log("options!!!>>>", options);
-
-        return writableStream();
-    };
-
-    return x;
+    return writableStream();
 }
 
 function connect() {

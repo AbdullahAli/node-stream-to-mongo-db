@@ -34,7 +34,7 @@ describe(".streamToMongoDB", () => {
     describe("with no given options", () => {
         it("it uses the default config to stream the expected number of documents to MongoDB", done => {
             const dataStream = jsonDataStream();
-            dataStream.pipe(streamToMongoDB({hello : 123}));
+            dataStream.pipe(streamToMongoDB);
 
             streamToMongoDB.on("finish", () => {
                 MongoDB.MongoClient.connectAsync(config.dbURL)
