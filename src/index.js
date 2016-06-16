@@ -1,5 +1,7 @@
 import Bluebird     from "bluebird";
 import MongoDB      from "mongodb";
+import async        from "asyncawait/async";
+import await        from "asyncawait/await";
 import { Writable } from "stream";
 
 Bluebird.promisifyAll(MongoDB.MongoClient);
@@ -14,43 +16,50 @@ function streamToMongoDB(options) {
     return writableStream();
 }
 
-function connect() {
+const connect = async (function connect() {
     return new Bluebird((resolve, reject) => {
-        MongoDB.MongoClient.connectAsync(config.dbURL)
-            .then(db => {
-                conn.db = db;
-                conn.collection = conn.db.collection(config.collection);
+        try {
+            let db = await (MongoDB.MongoClient.connectAsync(config.dbURL));
+            conn.db = db;
+            conn.collection = conn.db.collection(config.collection);
+            resolve();
+        } catch (error) {
+            reject(error);
+        }
+    });
+});
+
+const insertToMongo = async (function insertToMongo(records) {
+    return new Bluebird((resolve, reject) => {
+        try {
+            if(batch.length) {
+                await (conn.collection.insertAsync(records, config.insertOptions));
+                resetBatch();
                 resolve();
-            })
-            .catch(error => reject(error));
+            } else {
+                resolve();
+            }
+        } catch (error) {
+            reject(error);
+        }
     });
-}
+});
 
-function insertToMongo(records) {
+const prepareInsert = async (function prepareInsert(record) {
     return new Bluebird((resolve, reject) => {
-        if(batch.length) {
-            conn.collection.insertAsync(records, config.insertOptions)
-                .then(resetBatch)
-                .then(resolve)
-                .catch(error => reject(error));
-        } else {
-            resolve();
+        try {
+            batch.push(record);
+            if(batch.length === config.batchSize) {
+                await (insertToMongo(batch));
+                resolve();
+            } else {
+                resolve();
+            }
+        } catch (error) {
+            reject(error);
         }
     });
-}
-
-function prepareInsert(record) {
-    return new Bluebird(resolve => {
-        batch.push(record);
-
-        if(batch.length === config.batchSize) {
-            insertToMongo(batch)
-                .then(resolve);
-        } else {
-            resolve();
-        }
-    });
-}
+});
 
 function writableStream() {
     const writableStream = new Writable({

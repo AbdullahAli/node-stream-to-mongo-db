@@ -42,6 +42,7 @@
     "md5": "^2.1.0"
   },
   "dependencies": {
+    "asyncawait": "^1.0.3",
     "bluebird": "^3.4.0",
     "lodash": "^4.13.1",
     "mongodb": "^2.1.18",
