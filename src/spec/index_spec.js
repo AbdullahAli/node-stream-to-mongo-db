@@ -11,7 +11,8 @@ Bluebird.promisifyAll(MongoDB.Db.prototype);
 
 
 const DATA_FILE_LOCATION = path.resolve("src/spec/support/data.json");
-const config = { dbURL: 'mongodb://localhost:27017/streamToMongoDB', collection: 'test' };
+const testDB = "streamToMongoDB";
+const config = { dbURL: `mongodb://localhost:27017/${testDB}`, collection: "test" };
 
 let expectedNumberOfRecords = null;
 
@@ -20,65 +21,70 @@ describe(".streamToMongoDB", () => {
         countNumberOfRecords()
             .then(num => {
                 expectedNumberOfRecords = num;
-            })
-            .then(() => {
-                clearDB()
-                    .then(done);
-                // done();
+                done();
             });
     });
 
-    // beforeEach(done => {
-    //     clearDB()
-    //         .then(() => done());
-    // });
+    beforeEach(done => {
+        clearDB().then(done);
+    });
 
-    // afterEach(done => {
-    //     clearDB()
-    //         .then(done);
-    // });
+    afterAll(done => {
+        clearDB().then(done);
+    });
 
     describe("with no given options", () => {
         it("it uses the default config to stream the expected number of documents to MongoDB", done => {
             const streamToMongoDB = StreamToMongoDB.streamToMongoDB(config);
-            ensureAllDocumentsInserted(streamToMongoDB, done).then(done)
-            // done();
+            ensureAllDocumentsInserted(streamToMongoDB, done).then(done);
         });
     });
 
     describe("with given options", () => {
+
+
+        describe("with batchSize same as the number of documents to be streamed", () => {
+            it("it streams the expected number of documents to MongoDB", done => {
+                let options = Object.assign(config, { batchSize : expectedNumberOfRecords });
+                const streamToMongoDB = StreamToMongoDB.streamToMongoDB(options);
+                ensureAllDocumentsInserted(streamToMongoDB).then(done);
+            });
+        });
+
         describe("with batchSize less than number of documents to be streamed", () => {
             it("it streams the expected number of documents to MongoDB", done => {
                 let options = Object.assign(config, { batchSize : expectedNumberOfRecords - 3 });
                 const streamToMongoDB = StreamToMongoDB.streamToMongoDB(options);
-                ensureAllDocumentsInserted(streamToMongoDB).then(done)
+                ensureAllDocumentsInserted(streamToMongoDB).then(done);
             });
         });
 
+        describe("with batchSize more than the number of documents to be streamed", () => {
+            it("it streams the expected number of documents to MongoDB", done => {
+                let options = Object.assign(config, { batchSize : expectedNumberOfRecords * 100 });
+                const streamToMongoDB = StreamToMongoDB.streamToMongoDB(options);
+                ensureAllDocumentsInserted(streamToMongoDB).then(done);
+            });
+        });
     });
 });
 
 function ensureAllDocumentsInserted(writableStream) {
     return new Bluebird((resolve, reject) => {
+        jsonDataStream().pipe(writableStream);
 
-    jsonDataStream().pipe(writableStream);
-
-    writableStream.on("finish", () => {
-        MongoDB.MongoClient.connectAsync(config.dbURL)
-            .then(db => {
-                db.collection(config.collection).countAsync()
-                    .then(count => {
-                        expect(count).toEqual(expectedNumberOfRecords);
-                        // done();
-                    })
-                    .then(resolve)
-                    .catch(() => console.log("pp111ppo"))
-            })
-            .catch(() => console.log("ppppo"))
-
+        writableStream.on("close", () => {
+            MongoDB.MongoClient.connectAsync(config.dbURL)
+                .then(db => {
+                    db.collection(config.collection).countAsync()
+                        .then(count => {
+                            expect(count).toEqual(expectedNumberOfRecords);
+                        })
+                        .then(resolve);
+                })
+                .catch(error => reject(error));
+        });
     });
-});
-
 }
 
 function jsonDataStream() {
@@ -88,19 +94,8 @@ function jsonDataStream() {
 function clearDB() {
     return new Bluebird((resolve, reject) => {
         MongoDB.MongoClient.connectAsync(config.dbURL)
-            .then(db => {
-                db.dropDatabaseAsync()
-                    .then(() => console.log("CLEARED!!!"))
-                    .then(resolve)
-                    .catch(error => {
-                        if(error.message === "ns not found") {
-                            resolve();
-                        } else {
-                            console.log("here!!!!")
-                            reject(error);
-                        }
-                    });
-            }).catch(error => console.log("woooo"))
+            .then(db => db.collection(config.collection).drop(resolve))
+            .catch(error => reject(error));
     });
 }
 
