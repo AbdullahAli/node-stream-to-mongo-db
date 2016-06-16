@@ -64,24 +64,24 @@ const prepareInsert = async (function prepareInsert(record) {
 function writableStream() {
     const writableStream = new Writable({
         objectMode: true,
-        write: function(record, encoding, next) {
+        write: async (function(record, encoding, next) {
             if(conn.db) {
-                prepareInsert(record).then(next);
+                await (prepareInsert(record));
+                next();
             } else {
-                connect().then(() => {
-                    prepareInsert(record).then(next);
-                });
+                await (connect());
+                await (prepareInsert(record));
+                next();
             }
-        }
+        })
     });
 
-    writableStream.on("finish", () => {
-        insertToMongo(batch).then(() => {
-            conn.db.close();
-            resetConn();
-            writableStream.emit("close");
-        });
-    });
+    writableStream.on("finish", async (() => {
+        await (insertToMongo(batch));
+        conn.db.close();
+        resetConn();
+        writableStream.emit("close");
+    }));
 
     return writableStream;
 }
