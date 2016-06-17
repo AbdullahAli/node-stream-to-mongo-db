@@ -4,9 +4,8 @@
   "description": "Stream data to MongoDB using node's `pipe()` command",
   "main": "src/index.js",
   "scripts": {
-    "compile": "babel -d out/ src/",
-    "prepublish": "npm run compile",
-    "test": "npm run test"
+    "compile": "./node_modules/babel-cli/bin/babel.js -d out/ src/",
+    "test": "./node_modules/babel-cli/bin/babel-node.js src/spec/support/run.js"
   },
   "repository": {
     "type": "git",
@@ -34,21 +33,15 @@
     "JSONStream": "^1.1.2",
     "babel-core": "^6.9.1",
     "babel-preset-es2015": "^6.9.0",
-    "commander": "^2.9.0",
     "gulp": "^3.9.1",
     "gulp-shell": "^0.5.2",
-    "gulp-watch": "^4.3.6",
-    "jasmine": "^2.4.1",
     "md5": "^2.1.0"
+    "jasmine": "^2.4.1"
   },
   "dependencies": {
     "asyncawait": "^1.0.3",
     "bluebird": "^3.4.0",
     "lodash": "^4.13.1",
-    "mongodb": "^2.1.18",
-    "promise-mongo": "^3.0.3",
-    "promised-mongo": "^1.2.0",
-    "stream-tk": "^0.3.4",
-    "wait.for": "^0.6.6"
+    "mongodb": "^2.1.18"
   }
 }
