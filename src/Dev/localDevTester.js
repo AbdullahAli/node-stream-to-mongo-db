@@ -12,7 +12,6 @@ Bluebird.promisifyAll(MongoDB.MongoClient);
 // feel free to change these
 const NUMBER_OF_SAMPLE_DATA_TO_GENERATE = 100;
 const SAMPLE_DATA_OUTPUT_PATH  = "src/Dev/testDataDev.json";
-
 let config = {
     dbURL: "mongodb://localhost:27017/streamToMongoDB",
     collection: "dev",

@@ -11,7 +11,6 @@ Bluebird.promisifyAll(MongoDB.MongoClient);
 Bluebird.promisifyAll(MongoDB.Collection.prototype);
 Bluebird.promisifyAll(MongoDB.Db.prototype);
 
-
 const DATA_FILE_LOCATION = path.resolve("src/spec/support/data.json");
 const testDB = "streamToMongoDB";
 const config = { dbURL: `mongodb://localhost:27017/${testDB}`, collection: "test"};

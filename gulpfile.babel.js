@@ -1,5 +1,3 @@
-"use strict";
-
 import gulp from "gulp";
 import shell from "gulp-shell";
 

@@ -45,10 +45,11 @@ const insertToMongo = async (function insertToMongo(records) {
     });
 });
 
-const prepareInsert = async (function prepareInsert(record) {
+const addToBatch = async (function addToBatch(record) {
     return new Bluebird((resolve, reject) => {
         try {
             batch.push(record);
+
             if(batch.length === config.batchSize) {
                 await (insertToMongo(batch));
                 resolve();
@@ -66,11 +67,11 @@ function writableStream() {
         objectMode: true,
         write: async (function(record, encoding, next) {
             if(conn.db) {
-                await (prepareInsert(record));
+                await (addToBatch(record));
                 next();
             } else {
                 await (connect());
-                await (prepareInsert(record));
+                await (addToBatch(record));
                 next();
             }
         })
@@ -90,6 +91,7 @@ function setupConfig(options){
     config = options;
     const defaultConfiguration = defaultConfig();
 
+    // add required options if not exists
     Object.keys(defaultConfiguration).map(configKey => {
         if(!config[configKey]) {
             config[configKey] = defaultConfiguration[configKey];
