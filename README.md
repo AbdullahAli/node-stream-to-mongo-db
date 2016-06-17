@@ -1,1 +1,2 @@
-TESTing
+![Alt text](logo.png)
+
