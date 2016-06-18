@@ -11,14 +11,13 @@
 
 ### Example 1.1: Using [MongoDB Client](https://docs.mongodb.com/getting-started/node/client/)
 ```
-var MongoClient = require("mongodb").MongoClient;
+var MongoClient     = require("mongodb").MongoClient;
 var streamToMongoDB = require("stream-to-mongo-db");
 
 // where the data will come from
-var inputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-input" };
-
+var inputDBConfig  = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-input"  };
 // where the data will end up
-var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" }
+var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
 
 MongoClient.connect(inputDBConfig.dbURL, function(error, db) => {
     if(error) { throw error; }
@@ -34,7 +33,6 @@ MongoClient.connect(inputDBConfig.dbURL, function(error, db) => {
 
 ### Example 1.2: Using [Mongoose](http://mongoosejs.com/)
 ```
-// setup mongoose
 var mongoose = require("mongoose");
 
 // where the data will come from
@@ -42,7 +40,7 @@ mongoose.connect("mongodb://localhost:27017/stream-to-mongo-db");
 var MyModel  = mongoose.model('ModelName', mySchema);
 
 // where the data will end up
-var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" }
+var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
 
 // create the writable stream
 var writableStream = StreamToMongoDB(outputDBConfig);
@@ -74,7 +72,7 @@ var s3         = new AWS.S3();
 var params     = { Bucket: "myBucket", Key: "myJsonData.json" };
 
 // where the data will end up
-var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" }
+var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
 
 // create the writable stream
 var writableStream = StreamToMongoDB(outputDBConfig);
@@ -89,7 +87,7 @@ var request    = require("request");
 var JSONStream = require("JSONStream");
 
 // where the data will end up
-var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" }
+var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
 
 // create the writable stream
 var writableStream = StreamToMongoDB(outputDBConfig);
@@ -102,10 +100,11 @@ request("www.pathToYourApi.com/endPoint")
 
 ## Example 4: Stream from a local file
 ```
+var fs         = require("fs");
 var JSONStream = require("JSONStream");
 
 // where the data will end up
-var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" }
+var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
 
 // create the writable stream
 var writableStream = StreamToMongoDB(outputDBConfig);
