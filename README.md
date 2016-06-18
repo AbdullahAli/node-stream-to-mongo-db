@@ -6,6 +6,11 @@
 
 `stream-to-mongo-db` allows you to stream JSON directly into a MongoDB databases, using a read stream (an a S3 file, local file, a Web API or even another MongoDB database).  The best thing about this package is it allows you to control the size of the `batch` before issuing a write to mongo - see [CONFIG](#config)
 
+# USAGE
+```
+npm i stream-to-mongo-db
+```
+
 # EXAMPLES
 ## Example 1: Stream from another MongoDB database
 
@@ -119,7 +124,7 @@ fs.createReadStream("./myJsonData.json").pipe(JSONStream.parse('*')).pipe(writab
     **[ REQUIRED - String ]**
 
     the url to your db (including the db name)
-    
+
     eg: `mongodb://localhost:27017/stream-to-mongo-db`
 
 - `collection`    
@@ -127,7 +132,7 @@ fs.createReadStream("./myJsonData.json").pipe(JSONStream.parse('*')).pipe(writab
     **[ REQUIRED - String ]**
 
     the collection to stream to
-    
+
     eg: `my-collection`
 
 - `batchSize`    
@@ -137,17 +142,17 @@ fs.createReadStream("./myJsonData.json").pipe(JSONStream.parse('*')).pipe(writab
     the number of documents consumed from the read stream before writing to mongodb
 
     this option defaults to `1`, i.e: stream to mongo as you consume the read stream
-    
+
     eg: `100`
 
-- `insertOptions` 
+- `insertOptions`
 
     **[ OPTIONAL [ default : `{ w : 1 }` ] - Object ]**
-    
+
     mongodb insert options
 
     this option defaults to `{ w : 1 }`, i.e: requests acknowledgement that the write operation has propagated to the standalone mongod or the primary in a replica set
-    
+
     eg: [see mongo documentation for other options](https://docs.mongodb.com/manual/reference/write-concern/)
 
 # CONTRIBUTION
