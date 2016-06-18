@@ -7,6 +7,4 @@ gulpfile.babel.js
 .babelrc
 LICENSE
 out/Dev
-out/tester
-LICENSE
-README.md
+out/tester.js
