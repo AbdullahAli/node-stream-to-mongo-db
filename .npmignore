@@ -6,3 +6,7 @@ gulpfile.babel.js
 .jshintrc
 .babelrc
 LICENSE
+out/Dev
+out/tester
+LICENSE
+README.md
