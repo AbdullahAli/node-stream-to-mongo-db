@@ -4,9 +4,9 @@
 
 # Stream To Mongo DB
 
-`stream-to-mongo-db` allows you to stream JSON directly into a MongoDB databases, using a read stream (an a S3 file, local file, a Web API or even another MongoDB database).  Here is a few examples of some of the most common use cases
+`stream-to-mongo-db` allows you to stream JSON directly into a MongoDB databases, using a read stream (an a S3 file, local file, a Web API or even another MongoDB database).  The best thing about this package is it allows you to control the size of the `batch` before issuing a write to mongo - see Options
 
-## Example 1: Another MongoDB database
+## Example 1: Stream from another MongoDB database
 
 ### Example 1.1: Using MongoDB Client
 ```
@@ -64,7 +64,7 @@ MyModel.find().lean().stream({
 }).pipe(writableStream);
 ```
 
-## Example 2: An S3 file using AWS-SDK
+## Example 2: Stream from an S3 file using AWS-SDK
 ```
 var AWS        = require("aws-sdk");
 var JSONStream = require("JSONStream");
@@ -82,7 +82,7 @@ var writableStream = StreamToMongoDB(outputDBConfig);
 s3.getObject(params).createReadStream().pipe(JSONStream.parse('*')).pipe(writableStream);
 ```
 
-## Example 3: A Web API
+## Example 3: Stream from a Web API
 ```
 var request    = require("request");
 var JSONStream = require("JSONStream");
@@ -99,7 +99,7 @@ request("www.pathToYourApi.com/endPoint")
     .pipe(writableStream);
 ```
 
-## Example 4: Local file
+## Example 4: Stream from a local file
 ```
 var JSONStream = require("JSONStream");
 
