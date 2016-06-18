@@ -75,8 +75,8 @@ var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
 var AWS             = require("aws-sdk");
 var JSONStream      = require("JSONStream");
 
-var s3         = new AWS.S3();
-var params     = { Bucket: "myBucket", Key: "myJsonData.json" };
+var s3              = new AWS.S3();
+var params          = { Bucket: "myBucket", Key: "myJsonData.json" };
 
 // where the data will end up
 var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
