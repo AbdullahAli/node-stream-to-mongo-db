@@ -2,7 +2,7 @@
   "name": "stream-to-mongo-db",
   "version": "1.0.2",
   "description": "Stream data to MongoDB using node's the pipe command",
-  "main": "src/index.js",
+  "main": "out/index.js",
   "scripts": {
     "build": "./node_modules/babel-cli/bin/babel.js -d out/ src/",
     "prepublish": "npm run build",
