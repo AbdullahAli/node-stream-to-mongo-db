@@ -17,7 +17,7 @@ npm i stream-to-mongo-db
 ### Example 1.1: Using [MongoDB Client](https://docs.mongodb.com/getting-started/node/client/)
 ```
 var MongoClient     = require("mongodb").MongoClient;
-var streamToMongoDB = require("stream-to-mongo-db");
+var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
 
 // where the data will come from
 var inputDBConfig  = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-input"  };
@@ -28,7 +28,7 @@ MongoClient.connect(inputDBConfig.dbURL, function(error, db) => {
     if(error) { throw error; }
 
     // create the writable stream
-    var writableStream = StreamToMongoDB(outputDBConfig);
+    var writableStream = streamToMongoDB(outputDBConfig);
 
     // stream
     db.collection(inputDBConfig.collection).find().stream().pipe(writableStream);
@@ -38,7 +38,8 @@ MongoClient.connect(inputDBConfig.dbURL, function(error, db) => {
 
 ### Example 1.2: Using [Mongoose](http://mongoosejs.com/)
 ```
-var mongoose = require("mongoose");
+var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
+var mongoose        = require("mongoose");
 
 // where the data will come from
 mongoose.connect("mongodb://localhost:27017/stream-to-mongo-db");
@@ -48,7 +49,7 @@ var MyModel  = mongoose.model('ModelName', mySchema);
 var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
 
 // create the writable stream
-var writableStream = StreamToMongoDB(outputDBConfig);
+var writableStream = streamToMongoDB(outputDBConfig);
 
 // stream
 MyModel.find().lean().stream().pipe(writableStream);
@@ -70,8 +71,9 @@ MyModel.find().lean().stream({
 
 ## Example 2: Stream from an S3 file using [AWS-SDK](https://aws.amazon.com/sdk-for-node-js/)
 ```
-var AWS        = require("aws-sdk");
-var JSONStream = require("JSONStream");
+var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
+var AWS             = require("aws-sdk");
+var JSONStream      = require("JSONStream");
 
 var s3         = new AWS.S3();
 var params     = { Bucket: "myBucket", Key: "myJsonData.json" };
@@ -80,7 +82,7 @@ var params     = { Bucket: "myBucket", Key: "myJsonData.json" };
 var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
 
 // create the writable stream
-var writableStream = StreamToMongoDB(outputDBConfig);
+var writableStream = streamToMongoDB(outputDBConfig);
 
 // stream
 s3.getObject(params).createReadStream().pipe(JSONStream.parse('*')).pipe(writableStream);
@@ -88,14 +90,15 @@ s3.getObject(params).createReadStream().pipe(JSONStream.parse('*')).pipe(writabl
 
 ## Example 3: Stream from a Web API
 ```
-var request    = require("request");
-var JSONStream = require("JSONStream");
+var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
+var request         = require("request");
+var JSONStream      = require("JSONStream");
 
 // where the data will end up
 var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
 
 // create the writable stream
-var writableStream = StreamToMongoDB(outputDBConfig);
+var writableStream = streamToMongoDB(outputDBConfig);
 
 // stream
 request("www.pathToYourApi.com/endPoint")
@@ -105,14 +108,15 @@ request("www.pathToYourApi.com/endPoint")
 
 ## Example 4: Stream from a local file
 ```
-var fs         = require("fs");
-var JSONStream = require("JSONStream");
+var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
+var JSONStream      = require("JSONStream");
+var fs              = require("fs");
 
 // where the data will end up
 var outputDBConfig = { dbURL : "mongodb://localhost:27017/stream-to-mongo-db", collection : "dev-test-output" };
 
 // create the writable stream
-var writableStream = StreamToMongoDB(outputDBConfig);
+var writableStream = streamToMongoDB(outputDBConfig);
 
 // stream
 fs.createReadStream("./myJsonData.json").pipe(JSONStream.parse('*')).pipe(writableStream);

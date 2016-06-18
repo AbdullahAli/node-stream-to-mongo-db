@@ -1,4 +1,4 @@
-import streamToMongoDB     from "../index";
+import { streamToMongoDB } from "../index";
 import sampleDataGenerator from "./sampleDataGenerator";
 import async               from "asyncawait/async";
 import await               from "asyncawait/await";
@@ -18,7 +18,7 @@ let config = {
     batchSize: 1
 };
 
-let streamer = streamToMongoDB.streamToMongoDB(config);
+let streamer = streamToMongoDB(config);
 
 const runTester = async (function runTester() {
     try {
