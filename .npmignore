@@ -1,3 +1,8 @@
 src
 out/spec
 logo.png
+gulpfile.babel.js
+.travis.yml
+.jshintrc
+.babelrc
+LICENSE
