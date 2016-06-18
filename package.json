@@ -1,10 +1,11 @@
 {
   "name": "stream-to-mongo-db",
   "version": "1.0.1",
-  "description": "Stream data to MongoDB using node's `pipe()` command",
+  "description": "Stream data to MongoDB using node's the pipe command",
   "main": "src/index.js",
   "scripts": {
-    "compile": "./node_modules/babel-cli/bin/babel.js -d out/ src/",
+    "build": "./node_modules/babel-cli/bin/babel.js -d out/ src/",
+    "prepublish": "npm run build",
     "test": "./node_modules/babel-cli/bin/babel-node.js src/spec/support/run.js"
   },
   "repository": {
