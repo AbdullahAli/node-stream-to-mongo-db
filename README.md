@@ -165,5 +165,5 @@ Please feel free to fork, pull request, discuss, share your ideas and raise issu
 # ACKNOWLEDGEMENTS
 Insipred by [stream-to-mongo](https://www.npmjs.com/package/stream-to-mongo)
 
-## LICENSE
+# LICENSE
 [MIT](LICENSE)
