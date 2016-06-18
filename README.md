@@ -64,7 +64,7 @@ MyModel.find().lean().stream({
 }).pipe(writableStream);
 ```
 
-## Example 2: An S3 FILE using AWS-SDK
+## Example 2: An S3 file using AWS-SDK
 ```
 var AWS        = require("aws-sdk");
 var JSONStream = require("JSONStream");
