@@ -115,20 +115,20 @@ fs.createReadStream("./myJsonData.json").pipe(JSONStream.parse('*')).pipe(writab
 ```
 
 # CONFIG
-- `dbURL`         ** [ REQUIRED - String ] **
+- `dbURL`         **[ REQUIRED - String ]**
     the url to your db (including the db name)
     eg: `mongodb://localhost:27017/stream-to-mongo-db`
 
-- `collection`    ** [ REQUIRED - String ] **
+- `collection`    **[ REQUIRED - String ]**
     the collection to stream to
     eg: `my-collection`
 
-- `batchSize`     ** [ OPTIONAL [ default : `1` ] - Integer ] **
+- `batchSize`     **[ OPTIONAL [ default : `1` ] - Integer ]**
     the number of documents consumed from the read stream before writing to mongodb
     this option defaults to `1`, i.e: stream to mongo as you consume the read stream
     eg: `100`
 
-- `insertOptions` ** [ OPTIONAL [ default : `{ w : 1 }` ] - Object ] **
+- `insertOptions` **[ OPTIONAL [ default : `{ w : 1 }` ] - Object ]**
     mongodb insert options
     this option defaults to `{ w : 1 }`, i.e: requests acknowledgement that the write operation has propagated to the standalone mongod or the primary in a replica set
     eg: [see mongo documentation for other options](https://docs.mongodb.com/manual/reference/write-concern/)
