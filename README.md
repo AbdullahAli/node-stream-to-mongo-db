@@ -7,7 +7,8 @@
 `stream-to-mongo-db` allows you to stream JSON directly into a MongoDB databases, using a read stream (an a S3 file, local file, a Web API or even another MongoDB database).  The best thing about this package is it allows you to control the size of the `batch` before issuing a write to mongo - see [CONFIG](#config)
 
 # USAGE
-```
+
+```javascript
 npm i stream-to-mongo-db
 ```
 
@@ -15,7 +16,8 @@ npm i stream-to-mongo-db
 ## Example 1: Stream from another MongoDB database
 
 ### Example 1.1: Using [MongoDB Client](https://docs.mongodb.com/getting-started/node/client/)
-```
+
+```javascript
 var MongoClient     = require("mongodb").MongoClient;
 var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
 
@@ -40,11 +42,11 @@ MongoClient.connect(inputDBConfig.dbURL, function(error, db) {
         db.close();
     });
 });
-
 ```
 
 ### Example 1.2: Using [Mongoose](http://mongoosejs.com/)
-```
+
+```javascript
 var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
 var mongoose        = require("mongoose");
 
@@ -71,7 +73,7 @@ stream.on("end", () => {
 
 This example gets even more powerful when you want to transform the input data before writing it to the writableStream:
 
-```
+```javascript
 [...]
 
 // create the readable stream and transform the data before writing it
@@ -91,7 +93,8 @@ stream.on("end", () => {
 ```
 
 ## Example 2: Stream from an S3 file using [AWS-SDK](https://aws.amazon.com/sdk-for-node-js/)
-```
+
+```javascript
 var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
 var AWS             = require("aws-sdk");
 var JSONStream      = require("JSONStream");
@@ -112,7 +115,8 @@ s3.getObject(params).createReadStream()
 ```
 
 ## Example 3: Stream from a Web API
-```
+
+```javascript
 var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
 var request         = require("request");
 var JSONStream      = require("JSONStream");
@@ -130,6 +134,7 @@ request("www.pathToYourApi.com/endPoint")
 ```
 
 ## Example 4: Stream from a local file
+
 ```
 var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
 var JSONStream      = require("JSONStream");

@@ -1,6 +1,6 @@
 {
   "name": "stream-to-mongo-db",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Stream data to MongoDB using node's the pipe command",
   "main": "out/index.js",
   "scripts": {
