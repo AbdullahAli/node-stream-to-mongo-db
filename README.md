@@ -135,7 +135,7 @@ request("www.pathToYourApi.com/endPoint")
 
 ## Example 4: Stream from a local file
 
-```
+```javascript
 var streamToMongoDB = require("stream-to-mongo-db").streamToMongoDB;
 var JSONStream      = require("JSONStream");
 var fs              = require("fs");
