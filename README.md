@@ -167,7 +167,7 @@ fs.createReadStream("./myJsonData.json")
 
     the collection to stream to
 
-    eg: `my-collection`
+    eg: `myCollection`
 
 - `batchSize`    
 
