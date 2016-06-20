@@ -6,6 +6,10 @@
 
 `stream-to-mongo-db` allows you to stream objects directly into a MongoDB databases, using a read stream (an a S3 file, local file, a Web API or even another MongoDB database).  The best thing about this package is it allows you to control the size of the `batch` before issuing a write to mongo - see [CONFIG](#config)
 
+# SUPPORTED NODE VERSIONS
+
+This package supports Node.js versions `4`, `5` and `6`.  If you require another version to be supported, please raise an issue.
+
 # USAGE
 
 ```javascript
