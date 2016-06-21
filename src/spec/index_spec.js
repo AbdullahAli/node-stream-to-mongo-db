@@ -23,50 +23,50 @@ describe(".streamToMongoDB", () => {
         done();
     }));
 
-    beforeEach(done => {
+    beforeEach(async (done => {
         await (clearDB());
         done();
-    });
+    }));
 
-    afterAll(done => {
+    afterAll(async (done => {
         await (clearDB());
         done();
-    });
+    }));
 
     describe("with no given options", () => {
-        it("it uses the default config to stream the expected number of documents to MongoDB", done => {
+        it("it uses the default config to stream the expected number of documents to MongoDB", async (done => {
             const streamToMongoDB = StreamToMongoDB.streamToMongoDB(config);
             await (ensureAllDocumentsInserted(streamToMongoDB));
             done();
-        });
+        }));
     });
 
     describe("with given options", () => {
         describe("with batchSize same as the number of documents to be streamed", () => {
-            it("it streams the expected number of documents to MongoDB", done => {
+            it("it streams the expected number of documents to MongoDB", async (done => {
                 let options = Object.assign(config, { batchSize : expectedNumberOfRecords});
                 const streamToMongoDB = StreamToMongoDB.streamToMongoDB(options);
                 await (ensureAllDocumentsInserted(streamToMongoDB));
                 done();
-            });
+            }));
         });
 
         describe("with batchSize less than number of documents to be streamed", () => {
-            it("it streams the expected number of documents to MongoDB", done => {
+            it("it streams the expected number of documents to MongoDB", async (done => {
                 let options = Object.assign(config, { batchSize : expectedNumberOfRecords - 3});
                 const streamToMongoDB = StreamToMongoDB.streamToMongoDB(options);
                 await (ensureAllDocumentsInserted(streamToMongoDB));
                 done();
-            });
+            }));
         });
 
         describe("with batchSize more than the number of documents to be streamed", () => {
-            it("it streams the expected number of documents to MongoDB", done => {
+            it("it streams the expected number of documents to MongoDB", async (done => {
                 let options = Object.assign(config, { batchSize : expectedNumberOfRecords * 100 });
                 const streamToMongoDB = StreamToMongoDB.streamToMongoDB(options);
                 await (ensureAllDocumentsInserted(streamToMongoDB));
                 done();
-            });
+            }));
         });
     });
 });
@@ -75,7 +75,7 @@ function ensureAllDocumentsInserted(writableStream) {
     return new Bluebird((resolve, reject) => {
         jsonDataStream().pipe(writableStream);
 
-        writableStream.on("close", () => {
+        writableStream.on("close", async (() => {
             try {
                 const db = await (MongoDB.MongoClient.connectAsync(config.dbURL));
                 const count = await (db.collection(config.collection).countAsync());
@@ -84,7 +84,7 @@ function ensureAllDocumentsInserted(writableStream) {
             } catch (error) {
                 reject(error);
             }
-        });
+        }));
     });
 }
 
@@ -93,14 +93,14 @@ function jsonDataStream() {
 }
 
 function clearDB() {
-    return new Bluebird((resolve, reject) => {
+    return new Bluebird(async ((resolve, reject) => {
         try {
             const db = await (MongoDB.MongoClient.connectAsync(config.dbURL));
             db.collection(config.collection).drop(resolve);
         } catch (error) {
             reject(error);
         }
-    });
+    }));
 }
 
 function countNumberOfRecords() {

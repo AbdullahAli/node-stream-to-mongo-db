@@ -63,7 +63,7 @@ const addToBatch = async (function addToBatch(record) {
 });
 
 function writableStream() {
-    const writableStream = new Writable({
+    const writable = new Writable({
         objectMode: true,
         write: async (function(record, encoding, next) {
             if(conn.db) {
@@ -77,15 +77,15 @@ function writableStream() {
         })
     });
 
-    writableStream.on("finish", async (() => {
+    writable.on("finish", async (() => {
         await (insertToMongo(batch));
         conn.db.close();
         resetConn();
-        writableStream.emit("close");
+        writable.emit("close");
     }));
 
-    return writableStream;
-}
+    return writable;
+};
 
 function setupConfig(options){
     config = options;
