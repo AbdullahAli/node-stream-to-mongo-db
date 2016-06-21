@@ -161,7 +161,7 @@ fs.createReadStream("./myJsonData.json")
 
     **[ REQUIRED - String ]**
 
-    the url to your db (including the db name)
+    The url to your db (including the db name)
 
     eg: `mongodb://localhost:27017/streamToMongoDB`
 
@@ -169,7 +169,7 @@ fs.createReadStream("./myJsonData.json")
 
     **[ REQUIRED - String ]**
 
-    the collection to stream to
+    The collection to stream to
 
     eg: `myCollection`
 
@@ -177,9 +177,16 @@ fs.createReadStream("./myJsonData.json")
 
     **[ OPTIONAL [ default : `1` ] - Integer ]**
 
-    the number of documents consumed from the read stream before writing to mongodb
+    The number of documents consumed from the read stream before writing to mongodb
 
-    this option defaults to `1`, i.e: stream to mongo as you consume the read stream
+    This option defaults to `1`, i.e: write every object individually to mongoDB as it is
+    received. This default is ideal if want to ensure every object is written as soon as
+    possible without the possibility of losing any objects if the MongoDB connection is
+    interrupted.
+
+    However, in most cases, this is unnecessary, since writing every object individually will
+    incur an additional I/O cost.  You can change this option to, say `100`, which will batch
+    these writes in 100's; allowing you to consume the stream must faster.
 
     eg: `100`
 
@@ -187,9 +194,9 @@ fs.createReadStream("./myJsonData.json")
 
     **[ OPTIONAL [ default : `{ w : 1 }` ] - Object ]**
 
-    mongodb insert options
+    MongoDB insert options
 
-    this option defaults to `{ w : 1 }`, i.e: requests acknowledgement that the write operation has propagated to the standalone mongod or the primary in a replica set
+    This option defaults to `{ w : 1 }`, i.e: requests acknowledgement that the write operation has propagated to the standalone mongod or the primary in a replica set
 
     eg: [see mongo documentation for other options](https://docs.mongodb.com/manual/reference/write-concern/)
 
