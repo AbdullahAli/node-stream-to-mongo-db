@@ -2,6 +2,10 @@
 [![Build Status](https://travis-ci.org/AbdullahAli/stream-to-mongo-db.svg?branch=master)](https://travis-ci.org/AbdullahAli/stream-to-mongo-db) [![Code Climate](https://codeclimate.com/github/AbdullahAli/stream-to-mongo-db/badges/gpa.svg)](https://codeclimate.com/github/AbdullahAli/stream-to-mongo-db)
 
 
+# Support this package
+Please support this package by ***[staring it on Github](https://github.com/AbdullahAli/stream-to-mongo-db)***
+
+
 # Stream To Mongo DB
 
 `stream-to-mongo-db` allows you to stream objects directly into a MongoDB databases, using a read stream (an a S3 file, local file, a Web API or even another MongoDB database).  The best thing about this package is it allows you to control the size of the `batch` before issuing a write to mongo - see [CONFIG](#config)
