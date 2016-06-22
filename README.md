@@ -3,7 +3,7 @@
 
 
 # Support this package
-Please support this package by ***[staring it on Github](https://github.com/AbdullahAli/stream-to-mongo-db)***
+Please support this package by ***[starring it on Github](https://github.com/AbdullahAli/stream-to-mongo-db)***
 
 
 # Stream To Mongo DB
