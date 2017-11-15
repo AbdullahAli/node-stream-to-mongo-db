@@ -1,3 +1,9 @@
 {
-  "presets": ["es2015"]
+  "presets": [
+    ["env", {
+      "targets": {
+        "chrome": "62"
+      }
+    }]
+  ]
 }

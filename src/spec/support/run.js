@@ -1,5 +1,5 @@
-import Jasmine from "jasmine";
+import Jasmine from 'jasmine'; // eslint-disable-line
 
-let jas = new Jasmine();
-jas.loadConfigFile("src/spec/support/jasmine.json");
+const jas = new Jasmine();
+jas.loadConfigFile('src/spec/support/jasmine.json');
 jas.execute();

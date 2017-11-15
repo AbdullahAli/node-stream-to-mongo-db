@@ -1,36 +1,30 @@
-import md5      from "md5";
-import _        from "lodash";
-import fs       from "fs";
-import async    from "asyncawait/async";
-import await    from "asyncawait/await";
-import Bluebird from "bluebird";
+import fs            from 'fs';
+import { promisify } from 'util';
 
-const writeFileAsync = Bluebird.promisifyAll(fs.writeFile);
+const writeFile = promisify(fs.writeFile);
 
-function generateData(count) {
-    process.stdout.write("generating sample data ");
-    let data = [];
-    _.times(count, () => data.push({ secret : md5(_.random(0, 10)), total : _.random(0, 10) }));
-    return data;
-}
+const generateSampleData = (count) => {
+  console.log('Generation sample data...');
+  return Array(count).fill({ someKey: Math.random().toString(2) });
+};
 
-function writeDataFile(data, outputFileLocation) {
-    return new Bluebird((resolve, reject) => {
-        try {
-            await (writeFileAsync(outputFileLocation, JSON.stringify(data)));
-            console.log("-> DONE");
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
+const writeDataFile = async (data, outputFileLocation) => {
+  try {
+    await writeFile(outputFileLocation, JSON.stringify(data));
+    console.log('-> DONE');
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-const insertSampleData = async (function insertSampleData(count, outputFileLocation) {
-    const data = generateData(count);
-    await (writeDataFile(data, outputFileLocation));
-});
+const insertSampleData = async (count, outputFileLocation) => {
+  try {
+    await writeDataFile(generateSampleData(count), outputFileLocation);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 module.exports = {
-    insertSampleData
+  insertSampleData
 };
