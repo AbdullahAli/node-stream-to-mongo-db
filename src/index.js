@@ -33,6 +33,8 @@ const addToBatch = (record) => {
       if(batch.length === config.batchSize) {
         await insertToMongo(batch);
         resolve();
+      } else {
+        resolve();
       }
     } catch (error) {
       console.log(error);
