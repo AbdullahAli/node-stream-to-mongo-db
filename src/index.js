@@ -88,7 +88,7 @@ const setupConfig = (options) => {
 };
 
 const resetConn = () => {
-  dbConnection = {};
+  dbConnection = null;
 };
 
 const resetBatch = () => {
