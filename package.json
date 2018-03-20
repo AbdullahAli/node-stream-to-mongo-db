@@ -1,5 +1,5 @@
 {
-  "name": "stream-to-mongo-db-fabienjuif",
+  "name": "stream-to-mongo-db",
   "version": "1.1.2",
   "description": "Stream data directly to MongoDB",
   "main": "out/index.js",
