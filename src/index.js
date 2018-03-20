@@ -17,28 +17,24 @@ const streamToMongoDB = (options) => {
 const connect = () => MongoDB.MongoClient.connect(config.dbURL);
 
 const insertToMongo = async (records) => {
+  await dbConnection.collection(config.collection).insert(records, config.insertOptions);
+  resetBatch();
+};
+
+const addToBatch = (record) => new Promise(async (resolve, reject) => {
   try {
-    await dbConnection.collection(config.collection).insert(records, config.insertOptions);
-    resetBatch();
-  } catch (error) {
-    console.log(error);
-  }
-};
+    batch.push(record);
 
-const addToBatch = (record) => {
-  return new Promise(async (resolve) => {
-    try {
-      batch.push(record);
-
-      if(batch.length === config.batchSize) {
-        await insertToMongo(batch);
-        resolve();
-      }
-    } catch (error) {
-      console.log(error);
+    if (batch.length === config.batchSize) {
+      await insertToMongo(batch);
+      resolve();
+    } else {
+      resolve();
     }
-  });
-};
+  } catch (error) {
+    reject(error);
+  }
+});
 
 const writableStream = () => {
   const writable = new Writable({
@@ -54,7 +50,8 @@ const writableStream = () => {
           next();
         }
       } catch (error) {
-        console.log(error);
+        if (dbConnection) dbConnection.close();
+        writable.emit('error', error);
       }
     }
   });
@@ -68,7 +65,8 @@ const writableStream = () => {
       resetConn();
       writable.emit('close');
     } catch(error) {
-      console.log(error);
+      if (dbConnection) dbConnection.close();
+      writable.emit('error', error)
     }
   });
 

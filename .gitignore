@@ -1,4 +1,7 @@
 out
-npm-debug.log
+
+**/*.log
+*.log
+
 node_modules
 src/Dev/testDataDev.json
