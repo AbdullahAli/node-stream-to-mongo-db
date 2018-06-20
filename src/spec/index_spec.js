@@ -62,15 +62,15 @@ const runStreamTest = (options, done) => {
       done();
     })
     .on('close', () => {
-      ensureAllDocumentsInserted(done)
-    })
+      ensureAllDocumentsInserted(done);
+    });
 };
 
 const ensureAllDocumentsInserted = async (done) => {
   const db = await connect();
   const count = await db.collection(config.collection).count();
   await db.close();
-  expect(expectedNumberOfRecords).toEqual(count);
+  expect(count).toEqual(expectedNumberOfRecords);
   done();
 };
 

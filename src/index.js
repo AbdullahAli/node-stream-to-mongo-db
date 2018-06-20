@@ -1,94 +1,66 @@
 import { Writable } from 'stream';
-import MongoDB      from 'mongodb';
+import { MongoClient } from 'mongodb';
 
-let config       = {};
-let batch        = [];
-let dbConnection = null;
-const defaultConfig = {
-  batchSize: 1,
-  insertOptions: { w: 1 }
-};
+module.exports = {
+  streamToMongoDB: (options) => {
+    const config = Object.assign(
+      // default config
+      {
+        batchSize: 1,
+        insertOptions: { w: 1 },
+      },
+      // overrided options
+      options,
+    );
 
-const streamToMongoDB = (options) => {
-  setupConfig(options);
-  return writableStream();
-};
+    // those variables can't be initialized without Promises, so we wait first drain
+    let dbConnection;
+    let collection;
+    let records = [];
 
-const connect = () => MongoDB.MongoClient.connect(config.dbURL);
+    // this function is usefull to insert records and reset the records array
+    const insert = async () => {
+      await collection.insert(records, config.insertOptions);
+      records = [];
+    };
 
-const insertToMongo = async (records) => {
-  await dbConnection.collection(config.collection).insert(records, config.insertOptions);
-  resetBatch();
-};
+    // stream
+    const writable = new Writable({
+      objectMode: true,
+      write: async (record, encoding, next) => {
+        try {
+          // connection
+          if (!dbConnection) dbConnection = await MongoClient.connect(config.dbURL);
+          if (!collection) collection = await dbConnection.collection(config.collection);
 
-const addToBatch = (record) => new Promise(async (resolve, reject) => {
-  try {
-    batch.push(record);
+          // add to batch records
+          records.push(record);
 
-    if (batch.length === config.batchSize) {
-      await insertToMongo(batch);
-      resolve();
-    } else {
-      resolve();
-    }
-  } catch (error) {
-    reject(error);
-  }
-});
+          // insert and reset batch recors
+          if (records.length >= config.batchSize) await insert();
 
-const writableStream = () => {
-  const writable = new Writable({
-    objectMode: true,
-    write: async (record, encoding, next) => {
-      try {
-        if(dbConnection) {
-          await addToBatch(record);
+          // next stream
           next();
-        } else {
-          dbConnection = await connect();
-          await addToBatch(record);
-          next();
+        } catch (error) {
+          if (dbConnection) await dbConnection.close();
+          writable.emit('error', error);
         }
-      } catch (error) {
-        if (dbConnection) dbConnection.close();
+      }
+    });
+
+    writable.on('finish', async () => {
+      try {
+        if (records.length > 0) await insert();
+        if (dbConnection) await dbConnection.close();
+
+        writable.emit('close');
+      } catch(error) {
+        if (dbConnection) await dbConnection.close();
+
         writable.emit('error', error);
       }
-    }
-  });
+    });
 
-  writable.on('finish', async () => {
-    try {
-      if(batch.length) {
-        await insertToMongo(batch);
-      }
-      dbConnection.close();
-      resetConn();
-      writable.emit('close');
-    } catch(error) {
-      if (dbConnection) dbConnection.close();
-      writable.emit('error', error)
-    }
-  });
-
-  return writable;
+    return writable;
+  },
 };
-
-const setupConfig = (options) => {
-  config = options;
-  // add required options if not exists
-  Object.keys(defaultConfig).forEach((configKey) => {
-    if(!config[configKey]) {
-      config[configKey] = defaultConfig[configKey];
-    }
-  });
-};
-
-const resetConn = () => {
-  dbConnection = null;
-};
-
-const resetBatch = () => {
-  batch = [];
-};
-
-module.exports = { streamToMongoDB };
