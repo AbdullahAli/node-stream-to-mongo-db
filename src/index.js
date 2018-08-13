@@ -24,13 +24,25 @@ module.exports = {
       records = [];
     };
 
+    const close = async () => {
+      if (dbConnection && !config.dbConnection) {
+        await dbConnection.close();
+      }
+    }
+
     // stream
     const writable = new Writable({
       objectMode: true,
       write: async (record, encoding, next) => {
         try {
           // connection
-          if (!dbConnection) dbConnection = await MongoClient.connect(config.dbURL);
+          if (!dbConnection) {
+            if (config.dbConnection) {
+              dbConnection = config.dbConnection;
+            } else {
+              dbConnection = await MongoClient.connect(config.dbURL);
+            }
+          }
           if (!collection) collection = await dbConnection.collection(config.collection);
 
           // add to batch records
@@ -42,7 +54,7 @@ module.exports = {
           // next stream
           next();
         } catch (error) {
-          if (dbConnection) await dbConnection.close();
+          await close();
           writable.emit('error', error);
         }
       }
@@ -51,11 +63,11 @@ module.exports = {
     writable.on('finish', async () => {
       try {
         if (records.length > 0) await insert();
-        if (dbConnection) await dbConnection.close();
+        await close();
 
         writable.emit('close');
       } catch(error) {
-        if (dbConnection) await dbConnection.close();
+        await close();
 
         writable.emit('error', error);
       }

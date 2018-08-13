@@ -169,6 +169,12 @@ fs.createReadStream('./myJsonData.json')
 
     eg: `mongodb://localhost:27017/streamToMongoDB`
 
+- `dbConnection`
+
+    **[ OPTIONAL - Object ]**
+
+    An optional connection to mongodb (By default, stream-to-mongo-db will open a new mongo connection). When provided, dbUrl will be ignored.
+
 - `collection`    
 
     **[ REQUIRED - String ]**
