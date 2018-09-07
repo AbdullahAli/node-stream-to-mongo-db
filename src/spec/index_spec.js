@@ -49,6 +49,25 @@ describe('.streamToMongoDB', () => {
         runStreamTest(config, done);
       });
     });
+
+    describe('with caller provided connection', () => {
+      it('it keeps the connection open', (done) => {
+        config.batchSize = expectedNumberOfRecords * 100;
+        connect().then((dbConnection) => {
+          let closed = false;
+          config.dbConnection = dbConnection;
+          dbConnection.on('close', () => {
+            closed = true;
+          });
+          runStreamTest(config, () => {
+            expect(closed).toEqual(false);
+            dbConnection.close().finally(done);
+          });
+        }).catch((err) => {
+          done();
+        });
+      });
+    });
   });
 });
 
