@@ -1,6 +1,12 @@
 import { Writable } from 'stream';
 import { MongoClient } from 'mongodb';
 
+const validOperations = [
+  'insert',
+  'update',
+  'delete'
+];
+
 module.exports = {
   streamToMongoDB: (options) => {
     const config = Object.assign(
@@ -8,6 +14,7 @@ module.exports = {
       {
         batchSize: 1,
         insertOptions: { w: 1 },
+        operationType: 'insert'
       },
       // overrided options
       options,
@@ -20,7 +27,7 @@ module.exports = {
 
     // this function is usefull to insert records and reset the records array
     const insert = async () => {
-      await collection.insert(records, config.insertOptions);
+      await collection[config.operationType + 'Many'](records, config.insertOptions);
       records = [];
     };
 
