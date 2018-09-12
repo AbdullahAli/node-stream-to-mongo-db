@@ -55,9 +55,23 @@ describe('.streamToMongoDB', () => {
   });
 
   describe('updates with given options', () => {
-    describe('with batchSize same as the number of documents to be streamed', () => {
+    describe('with default batchSize', () => {
       it('it updates all totals to the same value', (done) => {
-        config.batchSize = expectedNumberOfRecords;
+        config.batchSize = 1;
+        runUpdateStream(config, done);
+      });
+    });
+
+    describe('with batchSize less than number of documents to be streamed', () => {
+      it('it streams the expected number of documents to MongoDB', (done) => {
+        config.batchSize = expectedNumberOfRecords - 3;
+        runUpdateStream(config, done);
+      });
+    });
+
+    describe('with batchSize more than the number of documents to be streamed', () => {
+      it('it streams the expected number of documents to MongoDB', (done) => {
+        config.batchSize = expectedNumberOfRecords * 100;
         runUpdateStream(config, done);
       });
     });
