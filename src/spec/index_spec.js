@@ -26,9 +26,15 @@ describe('.streamToMongoDB', () => {
   });
 
   describe('with no given options', () => {
-    it('it uses the default config to stream the expected number of documents to MongoDB', async (done) => {
+    it('uses the default config to insert the expected number of documents to MongoDB', async (done) => {
       runInsertStream(config, done);
     });
+  });
+
+  describe('with no given options for an update', () => {
+    it('uses the default config to update the records in the db', async (done) => {
+      runUpdateStream(config, done);
+    })
   });
 
   describe('inserts with given options', () => {
@@ -55,9 +61,9 @@ describe('.streamToMongoDB', () => {
   });
 
   describe('updates with given options', () => {
-    describe('with default batchSize', () => {
-      it('it updates all totals to the same value', (done) => {
-        config.batchSize = 1;
+    describe('with batchSize same as the number of documents to be streamed', () => {
+      it('it streams the expected number of documents to MongoDB', (done) => {
+        config.batchSize = expectedNumberOfRecords;
         runUpdateStream(config, done);
       });
     });
