@@ -1,4 +1,4 @@
-/* global beforeAll, beforeEach, afterAll, expect, it, describe */
+/* global beforeEach, afterAll, expect, it, describe */
 import MongoDB         from 'mongodb';
 import fs              from 'fs';
 import path            from 'path';
@@ -10,7 +10,7 @@ const UPDATE_DATA_FILE_LOCATION = path.resolve('src/spec/support/updateData.json
 const UPDATE_DATA_FILE_VALUE = 1337;
 
 const testDB = 'streamToMongoDB';
-const config = { dbURL: `mongodb://localhost:27017/${testDB}`, collection: 'test' };
+const testConfig = { dbURL: `mongodb://localhost:27017/${testDB}`, collection: 'test' };
 
 const expectedNumberOfRecords = require('./support/insertData.json').length;
 
@@ -28,37 +28,37 @@ describe('.streamToMongoDB', () => {
   // insert basic
   describe('with no given options', () => {
     it('uses the default config to insert the expected number of documents to MongoDB', async (done) => {
-      runInsertStream(config, done);
+      runInsertStream(testConfig, done);
     });
   });
 
   // update basic
   describe('with no given options for an update', () => {
     it('uses the default config to update the records in the db', async (done) => {
-      runUpdateStream(config, done);
-    })
+      runUpdateStream(testConfig, done);
+    });
   });
 
   // inserts with options
   describe('inserts with given options', () => {
     describe('with batchSize same as the number of documents to be streamed', () => {
       it('it streams the expected number of documents to MongoDB', (done) => {
-        config.batchSize = expectedNumberOfRecords;
-        runInsertStream(config, done);
+        testConfig.batchSize = expectedNumberOfRecords;
+        runInsertStream(testConfig, done);
       });
     });
 
     describe('with batchSize less than number of documents to be streamed', () => {
       it('it streams the expected number of documents to MongoDB', (done) => {
-        config.batchSize = expectedNumberOfRecords - 3;
-        runInsertStream(config, done);
+        testConfig.batchSize = expectedNumberOfRecords - 3;
+        runInsertStream(testConfig, done);
       });
     });
 
     describe('with batchSize more than the number of documents to be streamed', () => {
       it('it streams the expected number of documents to MongoDB', (done) => {
-        config.batchSize = expectedNumberOfRecords * 100;
-        runInsertStream(config, done);
+        testConfig.batchSize = expectedNumberOfRecords * 100;
+        runInsertStream(testConfig, done);
       });
     });
   });
@@ -67,22 +67,22 @@ describe('.streamToMongoDB', () => {
   describe('updates with given options', () => {
     describe('with batchSize same as the number of documents to be streamed', () => {
       it('it streams the expected number of documents to MongoDB', (done) => {
-        config.batchSize = expectedNumberOfRecords;
-        runUpdateStream(config, done);
+        testConfig.batchSize = expectedNumberOfRecords;
+        runUpdateStream(testConfig, done);
       });
     });
 
     describe('with batchSize less than number of documents to be streamed', () => {
       it('it streams the expected number of documents to MongoDB', (done) => {
-        config.batchSize = expectedNumberOfRecords - 3;
-        runUpdateStream(config, done);
+        testConfig.batchSize = expectedNumberOfRecords - 3;
+        runUpdateStream(testConfig, done);
       });
     });
 
     describe('with batchSize more than the number of documents to be streamed', () => {
       it('it streams the expected number of documents to MongoDB', (done) => {
-        config.batchSize = expectedNumberOfRecords * 100;
-        runUpdateStream(config, done);
+        testConfig.batchSize = expectedNumberOfRecords * 100;
+        runUpdateStream(testConfig, done);
       });
     });
   });
@@ -91,28 +91,28 @@ describe('.streamToMongoDB', () => {
   describe('deletes with given options', () => {
     describe('with batchSize same as the number of documents to be streamed', () => {
       it('it streams the expected number of documents to MongoDB', (done) => {
-        config.batchSize = expectedNumberOfRecords;
-        runDeleteStream(config, done);
+        testConfig.batchSize = expectedNumberOfRecords;
+        runDeleteStream(testConfig, done);
       });
     });
 
     describe('with batchSize less than number of documents to be streamed', () => {
       it('it streams the expected number of documents to MongoDB', (done) => {
-        config.batchSize = expectedNumberOfRecords - 3;
-        runDeleteStream(config, done);
+        testConfig.batchSize = expectedNumberOfRecords - 3;
+        runDeleteStream(testConfig, done);
       });
     });
 
     describe('with batchSize more than the number of documents to be streamed', () => {
       it('it streams the expected number of documents to MongoDB', (done) => {
-        config.batchSize = expectedNumberOfRecords * 100;
-        runDeleteStream(config, done);
+        testConfig.batchSize = expectedNumberOfRecords * 100;
+        runDeleteStream(testConfig, done);
       });
     });
   });
 });
 
-const connect = () => MongoDB.MongoClient.connect(config.dbURL);
+const connect = () => MongoDB.MongoClient.connect(testConfig.dbURL);
 
 const runInsertStream = (config, done) => {
   fs.createReadStream(INSERT_DATA_FILE_LOCATION)
@@ -122,11 +122,11 @@ const runInsertStream = (config, done) => {
       done.fail(err);
     })
     .on('close', () => {
-      ensureAllDocumentsInserted(done);
+      ensureAllDocumentsInserted(config, done);
     });
 };
 
-const ensureAllDocumentsInserted = async (done) => {
+const ensureAllDocumentsInserted = async (config, done) => {
   const db = await connect();
   const count = await db.collection(config.collection).count();
   await db.close();
@@ -170,7 +170,7 @@ const updateAllDocuments = (config, done) => {
 const ensureAllDocumentsUpdated = async (config, done) => {
   const db = await connect();
   const data = await db.collection(config.collection).find({}).toArray();
-  data.forEach((d) => { expect(d.total).toEqual(UPDATE_DATA_FILE_VALUE) });
+  data.forEach((d) => { expect(d.total).toEqual(UPDATE_DATA_FILE_VALUE); });
   await db.close();
   done();
 };
@@ -185,7 +185,7 @@ const runDeleteStream = (config, done) => {
     .on('close', () => {
       deleteAllDocuments(config, done);
     });
-}
+};
 
 const deleteAllDocuments = (config, done) => {
   // update every document to have the same total
@@ -206,7 +206,7 @@ const deleteAllDocuments = (config, done) => {
     .on('close', () => {
       ensureAllDocumentsDeleted(config, done);
     });
-}
+};
 
 const ensureAllDocumentsDeleted = async (config, done) => {
   const db = await connect();
