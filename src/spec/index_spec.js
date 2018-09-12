@@ -104,7 +104,8 @@ const updateAllDocuments = (config, done) => {
     {},
     config,
     {
-      operationType: 'update'
+      operationType: 'update',
+      indexName: 'secret'
     }
   );
   fs.createReadStream(UPDATE_DATA_FILE_LOCATION)
@@ -118,11 +119,11 @@ const updateAllDocuments = (config, done) => {
     });
 };
 
-const ensureAllDocumentsUpdated = async (done) => {
+const ensureAllDocumentsUpdated = async (config, done) => {
   const db = await connect();
-  const data = await db.collection(config.collection).find({});
+  const data = await db.collection(config.collection).find({}).toArray();
+  data.forEach((d) => { expect(d.total).toEqual(UPDATE_DATA_FILE_VALUE) });
   await db.close();
-  data.forEach((d) => expect(d.total).toEqual(UPDATE_DATA_FILE_VALUE));
   done();
 };
 
