@@ -1,6 +1,6 @@
 {
   "name": "stream-to-mongo-db",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Stream data directly to MongoDB",
   "main": "out/index.js",
   "scripts": {
