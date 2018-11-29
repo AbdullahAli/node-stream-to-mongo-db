@@ -1,4 +1,4 @@
-/* global beforeAll, beforeEach, afterAll, expect, it, describe */
+/* global beforeEach, afterAll, expect, it, describe */
 import MongoDB         from 'mongodb';
 import fs              from 'fs';
 import path            from 'path';
@@ -53,17 +53,20 @@ describe('.streamToMongoDB', () => {
     describe('with caller provided connection', () => {
       it('it keeps the connection open', (done) => {
         config.batchSize = expectedNumberOfRecords * 100;
-        connect().then((dbConnection) => {
+        connect().then(async (client) => {
+          const dbConnection = await client.db();
           let closed = false;
+
           config.dbConnection = dbConnection;
+
           dbConnection.on('close', () => {
             closed = true;
           });
           runStreamTest(config, () => {
             expect(closed).toEqual(false);
-            dbConnection.close().finally(done);
+            client.close().finally(done);
           });
-        }).catch((err) => {
+        }).catch(() => {
           done();
         });
       });
@@ -71,13 +74,13 @@ describe('.streamToMongoDB', () => {
   });
 });
 
-const connect = () => MongoDB.MongoClient.connect(config.dbURL);
+const connect = () => MongoDB.MongoClient.connect(config.dbURL, { useNewUrlParser: true });
 
 const runStreamTest = (options, done) => {
   fs.createReadStream(DATA_FILE_LOCATION)
     .pipe(JSONStream.parse('*'))
     .pipe(StreamToMongoDB.streamToMongoDB(options))
-    .on('error', (err) => {
+    .on('error', () => {
       done();
     })
     .on('close', () => {
@@ -86,15 +89,20 @@ const runStreamTest = (options, done) => {
 };
 
 const ensureAllDocumentsInserted = async (done) => {
-  const db = await connect();
-  const count = await db.collection(config.collection).count();
-  await db.close();
+  const client = await connect();
+  const db = await client.db();
+  const count = await db.collection(config.collection).countDocuments();
+
+  await client.close();
+
   expect(count).toEqual(expectedNumberOfRecords);
   done();
 };
 
 const clearDB = async () => {
-  const dbConnection = await connect();
+  const client = await connect();
+  const dbConnection = await client.db();
+
   await dbConnection.dropDatabase();
-  await dbConnection.close();
+  await client.close();
 };

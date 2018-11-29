@@ -14,21 +14,22 @@ module.exports = {
     );
 
     // those variables can't be initialized without Promises, so we wait first drain
+    let client;
     let dbConnection;
     let collection;
     let records = [];
 
     // this function is usefull to insert records and reset the records array
     const insert = async () => {
-      await collection.insert(records, config.insertOptions);
+      await collection.insertMany(records, config.insertOptions);
       records = [];
     };
 
     const close = async () => {
-      if (dbConnection && !config.dbConnection) {
-        await dbConnection.close();
+      if (!config.dbConnection && client) {
+        await client.close();
       }
-    }
+    };
 
     // stream
     const writable = new Writable({
@@ -38,9 +39,10 @@ module.exports = {
           // connection
           if (!dbConnection) {
             if (config.dbConnection) {
-              dbConnection = config.dbConnection;
+              dbConnection = config.dbConnection; // eslint-disable-line prefer-destructuring
             } else {
-              dbConnection = await MongoClient.connect(config.dbURL);
+              client = await MongoClient.connect(config.dbURL, { useNewUrlParser: true });
+              dbConnection = await client.db();
             }
           }
           if (!collection) collection = await dbConnection.collection(config.collection);
