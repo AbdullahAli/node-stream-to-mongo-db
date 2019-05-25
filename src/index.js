@@ -46,6 +46,8 @@ module.exports = {
     // stream
     const writable = new Writable({
       objectMode: true,
+      autoDestroy: false, // Force nodejs-8.xx like functionality
+      emitClose: false, // Force nodejs-8.xx like functionality
       write: async (record, encoding, next) => {
         // connection
         if (!dbConnection) {
