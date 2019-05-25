@@ -1,18 +1,19 @@
 /* global beforeEach, afterAll, expect, it, describe */
-import MongoDB         from 'mongodb';
-import fs              from 'fs';
-import path            from 'path';
-import JSONStream      from 'JSONStream';
+import MongoDB from 'mongodb';
+import fs from 'fs';
+import path from 'path';
+import JSONStream from 'JSONStream';
 import StreamToMongoDB from '../index';
 
 const DATA_FILE_LOCATION = path.resolve('src/spec/support/data.json');
 const testDB = 'streamToMongoDB';
-const config = { dbURL: `mongodb://localhost:27017/${testDB}`, collection: 'test' };
+var config;
 
 const expectedNumberOfRecords = require('./support/data.json').length;
 
 describe('.streamToMongoDB', () => {
   beforeEach(async (done) => {
+    config = { dbURL: `mongodb://localhost:27017/${testDB}`, collection: 'test' };
     await clearDB();
     done();
   });
@@ -63,12 +64,13 @@ describe('.streamToMongoDB', () => {
             closed = true;
           });
           runStreamTest(config, () => {
+            expect(client.isConnected()).toBeTruthy();
             expect(closed).toEqual(false);
-            client.close().finally(done);
+            client.close()
+              .then(done)
+              .catch(done.fail)
           });
-        }).catch(() => {
-          done();
-        });
+        }).catch(done.fail);
       });
     });
   });
@@ -80,8 +82,8 @@ const runStreamTest = (options, done) => {
   fs.createReadStream(DATA_FILE_LOCATION)
     .pipe(JSONStream.parse('*'))
     .pipe(StreamToMongoDB.streamToMongoDB(options))
-    .on('error', () => {
-      done();
+    .on('error', (err) => {
+      done.fail(err);
     })
     .on('close', () => {
       ensureAllDocumentsInserted(done);
