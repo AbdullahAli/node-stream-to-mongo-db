@@ -19,6 +19,17 @@ module.exports = {
     let collection;
     let records = [];
 
+    const open = async () => {
+      if (config.dbConnection) {
+        dbConnection = config.dbConnection; // eslint-disable-line prefer-destructuring
+      } else {
+        client = await MongoClient.connect(config.dbURL, { useNewUrlParser: true });
+        dbConnection = await client.db();
+      }
+      dbConnection.on('error', () => writable.destroy());
+      if (!collection) collection = await dbConnection.collection(config.collection);
+    }
+
     // this function is usefull to insert records and reset the records array
     const insert = async () => {
       await collection.insertMany(records, config.insertOptions);
@@ -29,49 +40,40 @@ module.exports = {
       if (!config.dbConnection && client) {
         await client.close();
       }
+      writable.emit('close');
     };
 
     // stream
     const writable = new Writable({
       objectMode: true,
       write: async (record, encoding, next) => {
-        try {
-          // connection
-          if (!dbConnection) {
-            if (config.dbConnection) {
-              dbConnection = config.dbConnection; // eslint-disable-line prefer-destructuring
-            } else {
-              client = await MongoClient.connect(config.dbURL, { useNewUrlParser: true });
-              dbConnection = await client.db();
-            }
-          }
-          if (!collection) collection = await dbConnection.collection(config.collection);
-
-          // add to batch records
-          records.push(record);
-
-          // insert and reset batch recors
-          if (records.length >= config.batchSize) await insert();
-
-          // next stream
-          next();
-        } catch (error) {
-          await close();
-          writable.emit('error', error);
+        // connection
+        if (!dbConnection) {
+          await open();
         }
-      }
-    });
 
-    writable.on('finish', async () => {
-      try {
-        if (records.length > 0) await insert();
+        // add to batch records
+        records.push(record);
+
+        // insert and reset batch recors
+        if (records.length >= config.batchSize) await insert();
+
+        // next stream
+        next();
+      },
+      final: async (done) => {
+        try {
+          if (records.length > 0) await insert();
+          done();
+        } catch (error) {
+          done(error);
+        } finally {
+          writable.destroy();
+        }
+      },
+      destroy: async (error, done) => {
         await close();
-
-        writable.emit('close');
-      } catch(error) {
-        await close();
-
-        writable.emit('error', error);
+        done();
       }
     });
 
