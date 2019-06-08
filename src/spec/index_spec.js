@@ -7,7 +7,7 @@ import StreamToMongoDB from '../index';
 
 const DATA_FILE_LOCATION = path.resolve('src/spec/support/data.json');
 const testDB = 'streamToMongoDB';
-var config;
+let config;
 
 const expectedNumberOfRecords = require('./support/data.json').length;
 
