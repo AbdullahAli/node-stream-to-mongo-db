@@ -41,7 +41,7 @@ module.exports = {
             if (config.dbConnection) {
               dbConnection = config.dbConnection; // eslint-disable-line prefer-destructuring
             } else {
-              client = await MongoClient.connect(config.dbURL, { useNewUrlParser: true });
+              client = await MongoClient.connect(config.dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
               dbConnection = await client.db();
             }
           }
